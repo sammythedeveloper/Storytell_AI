@@ -5,21 +5,20 @@ import g from "@/lib/gptScriptInstance";
 const script = "app/api/run-script/story-book.gpt";
 
 export async function POST(request: NextRequest) {
-  const { story, pages, path } = await request.json();
+    const { story, pages, path } = await request.json();
 
-  // Example CLI Command: gptscript ./story-book.gpt ---story-book
+      // Example CLI Command: gptscript ./story-book.gpt ---story-book
   const opts: RunOpts = {
     disableCache: true,
     input: `--story ${story} --pages ${pages} --path ${path}`,
   };
-
+    
   try {
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
         try {
           const run = await g.run(script, opts);
-
           run.on(RunEventType.Event, (data) => {
             controller.enqueue(
               encoder.encode(`event: ${JSON.stringify(data)}\n\n`)
